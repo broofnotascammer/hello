@@ -333,7 +333,7 @@
       const reader = new FileReader();
       reader.onload = (event) => {
         try {
-          const importedWebsites = JSON.parse(event.target.result);
+          const importedWebsites = html.parse(event.target.result);
           if (!Array.isArray(importedWebsites)) {
             throw new Error('Invalid format');
           }
