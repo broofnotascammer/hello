@@ -244,7 +244,7 @@
     <!-- Auto-populated by JavaScript -->
   </div>
 
-  <input type="file" id="import-file" accept=".html">
+  <input type="file" id="import-file" accept=".html" multiple>
 
   <script>
     // Load websites from localStorage
@@ -327,69 +327,50 @@
     });
 
     document.getElementById('import-file').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+  const file = e.target.files[0];
+  if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const importedWebsites = html.parse(event.target.result);
-          if (!Array.isArray(importedWebsites)) {
-            throw new Error('Invalid format');
-          }
-          
-          const currentWebsites = loadWebsites();
-          const newWebsites = [...currentWebsites];
-          
-          // Add only new websites (check by ID)
-          importedWebsites.forEach(imported => {
-            if (!newWebsites.some(existing => existing.id === imported.id)) {
-              newWebsites.push(imported);
-              // Save HTML content if included
-              if (imported.htmlContent) {
-                localStorage.setItem(imported.id, imported.htmlContent);
-              }
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      let importedWebsites = [];
+      if (file.name.endsWith('.json')) {
+        // Import from JSON export
+        importedWebsites = JSON.parse(event.target.result);
+        if (!Array.isArray(importedWebsites)) importedWebsites = [importedWebsites];
+        importedWebsites.forEach(imported => {
+          if (!currentWebsites.some(existing => existing.id === imported.id)) {
+            currentWebsites.push(imported);
+            if (imported.htmlContent) {
+              localStorage.setItem(imported.id, imported.htmlContent);
             }
-          });
-          
-          localStorage.setItem('userWebsites', JSON.stringify(newWebsites));
-          renderWebsites();
-          alert(`Added ${importedWebsites.length} website(s) to your collection!`);
-        } catch (err) {
-          console.error(err);
-          alert('Invalid file format! Please use a valid export file.');
-        }
-        e.target.value = ''; // Reset file input
-      };
-      reader.readAsText(file);
-    });
-
-    // View website
-    document.addEventListener('click', (e) => {
-      if (e.target.closest('.view')) {
-        e.preventDefault();
-        const id = e.target.closest('.view').dataset.id;
-        const html = localStorage.getItem(id);
-        if (html) {
-          const win = window.open('', '_blank');
-          win.document.write(html);
-          win.document.close();
-        } else {
-          alert('Website content not found!');
-        }
+          }
+        });
+        alert(`Added ${importedWebsites.length} website(s) to your collection!`);
+      } else if (file.name.endsWith('.html')) {
+        // Import from HTML file
+        const htmlContent = event.target.result;
+        const id = 'site-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+        const title = file.name.replace(/\.html?$/i, '');
+        const createdAt = new Date().toISOString();
+        const website = { id, title, createdAt };
+        localStorage.setItem(id, htmlContent);
+        const currentWebsites = loadWebsites();
+        currentWebsites.push(website);
+        localStorage.setItem('userWebsites', JSON.stringify(currentWebsites));
+        alert(`Imported 1 website: ${title}`);
+      } else {
+        throw new Error('Unsupported file type');
       }
-
-      // Export single website
-      if (e.target.closest('.export-one')) {
-        const id = e.target.closest('.export-one').dataset.id;
-        const websites = loadWebsites();
-        const website = websites.find(w => w.id === id);
-        if (website) {
-          // Include the HTML content in the export
-          const websiteWithContent = {
-            ...website,
-            htmlContent: localStorage.getItem(id)
-          };
+      renderWebsites();
+    } catch (err) {
+      console.error(err);
+      alert('Invalid file format! Please use a valid export file or HTML file.');
+    }
+    e.target.value = ''; // Reset file input
+  };
+  reader.readAsText(file);
+});
           
           const dataStr = JSON.stringify(websiteWithContent, null, 2);
           const blob = new Blob([dataStr], { type: 'application/json' });
