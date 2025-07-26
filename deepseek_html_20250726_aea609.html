@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Websites</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a0ca3;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --light-gray: #e9ecef;
+      --success: #4cc9f0;
+      --warning: #f8961e;
+      --danger: #ef233c;
+      --radius: 8px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: #f8fafc;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    h1 {
+      color: var(--primary);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .create-new {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.6rem 1.2rem;
+      background-color: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: var(--radius);
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .create-new:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .website-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .website-card {
+      border: 1px solid var(--light-gray);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+      background: white;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .website-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .website-card h3 {
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .website-card .meta {
+      color: var(--gray);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 10px;
+    }
+
+    .website-card .description {
+      color: var(--dark);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    .website-card .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .website-card .actions a, 
+    .website-card .actions button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .website-card .actions .view {
+      background: var(--primary);
+      color: white;
+    }
+
+    .website-card .actions .view:hover {
+      background: var(--primary-dark);
+    }
+
+    .website-card .actions .edit {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .website-card .actions .edit:hover {
+      background: rgba(67, 97, 238, 0.1);
+    }
+
+    .website-card .actions .export-one {
+      background: var(--warning);
+      color: white;
+    }
+
+    .website-card .actions .export-one:hover {
+      background: #e07b00;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px dashed var(--light-gray);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+
+    .empty-state h2 {
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      color: var(--gray);
+      max-width: 500px;
+      margin: 0 auto 1.5rem;
+    }
+
+    #import-file {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .header-actions {
+        width: 100%;
+        flex-direction: column;
+      }
+      
+      .create-new {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fas fa-globe"></i> My Websites</h1>
+    <div class="header-actions">
+      <a href="builder.html" class="create-new">
+        <i class="fas fa-plus"></i> Create New
+      </a>
+      <button id="import-btn" class="create-new" style="background: var(--success)">
+        <i class="fas fa-file-import"></i> Import
+      </button>
+      <button id="export-btn" class="create-new" style="background: var(--warning)">
+        <i class="fas fa-file-export"></i> Export All
+      </button>
+    </div>
+  </header>
+
+  <div class="website-list" id="websites-container">
+    <!-- Auto-populated by JavaScript -->
+  </div>
+
+  <input type="file" id="import-file" accept=".json">
+
+  <script>
+    // Load websites from localStorage
+    function loadWebsites() {
+      return JSON.parse(localStorage.getItem('userWebsites') || '[]');
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+
+    // Render websites
+    function renderWebsites() {
+      const container = document.getElementById('websites-container');
+      const websites = loadWebsites();
+      
+      container.innerHTML = '';
+      
+      if (websites.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h2>No websites yet</h2>
+            <p>Get started by creating your first website!</p>
+            <a href="builder.html" class="create-new">
+              <i class="fas fa-plus"></i> Create Website
+            </a>
+          </div>
+        `;
+        return;
+      }
+      
+      websites.forEach(site => {
+        const card = document.createElement('div');
+        card.className = 'website-card';
+        card.innerHTML = `
+          <h3>${site.title}</h3>
+          <div class="meta">
+            <span><i class="far fa-calendar-alt"></i> ${formatDate(site.createdAt)}</span>
+          </div>
+          <div class="actions">
+            <a href="#" class="view" data-id="${site.id}">
+              <i class="fas fa-external-link-alt"></i> View
+            </a>
+            <a href="builder.html?edit=${site.id}" class="edit">
+              <i class="fas fa-edit"></i> Edit
+            </a>
+            <button class="export-one" data-id="${site.id}">
+              <i class="fas fa-download"></i> Export
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Export all websites
+    document.getElementById('export-btn').addEventListener('click', () => {
+      const websites = loadWebsites();
+      if (websites.length === 0) {
+        alert('No websites to export!');
+        return;
+      }
+      
+      const dataStr = JSON.stringify(websites, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `my-websites-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    });
+
+    // Import websites
+    document.getElementById('import-btn').addEventListener('click', () => {
+      document.getElementById('import-file').click();
+    });
+
+    document.getElementById('import-file').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const importedWebsites = JSON.parse(event.target.result);
+          if (!Array.isArray(importedWebsites)) {
+            throw new Error('Invalid format');
+          }
+          
+          const currentWebsites = loadWebsites();
+          const newWebsites = [...currentWebsites];
+          
+          // Add only new websites (check by ID)
+          importedWebsites.forEach(imported => {
+            if (!newWebsites.some(existing => existing.id === imported.id)) {
+              newWebsites.push(imported);
+              // Save HTML content if included
+              if (imported.htmlContent) {
+                localStorage.setItem(imported.id, imported.htmlContent);
+              }
+            }
+          });
+          
+          localStorage.setItem('userWebsites', JSON.stringify(newWebsites));
+          renderWebsites();
+          alert(`Added ${importedWebsites.length} website(s) to your collection!`);
+        } catch (err) {
+          console.error(err);
+          alert('Invalid file format! Please use a valid export file.');
+        }
+        e.target.value = ''; // Reset file input
+      };
+      reader.readAsText(file);
+    });
+
+    // View website
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.view')) {
+        e.preventDefault();
+        const id = e.target.closest('.view').dataset.id;
+        const html = localStorage.getItem(id);
+        if (html) {
+          const win = window.open('', '_blank');
+          win.document.write(html);
+          win.document.close();
+        } else {
+          alert('Website content not found!');
+        }
+      }
+
+      // Export single website
+      if (e.target.closest('.export-one')) {
+        const id = e.target.closest('.export-one').dataset.id;
+        const websites = loadWebsites();
+        const website = websites.find(w => w.id === id);
+        if (website) {
+          // Include the HTML content in the export
+          const websiteWithContent = {
+            ...website,
+            htmlContent: localStorage.getItem(id)
+          };
+          
+          const dataStr = JSON.stringify(websiteWithContent, null, 2);
+          const blob = new Blob([dataStr], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `website-${website.title.replace(/[^a-z0-9]/gi, '-')}-${website.id}.json`;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 100);
+        }
+      }
+    });
+
+    // Initial render
+    renderWebsites();
+  </script>
+</body>
+</html>
